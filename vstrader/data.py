@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from enum import Enum
 from typing import Dict
 
 
@@ -49,3 +50,8 @@ class Portfolio(BaseModel):
         position = self.positions.get(trade_offer.ticker)
         position.update_sell(trade_offer)
         self.balance_rub += trade_offer.total_price
+
+
+class OperationType(str, Enum):
+    BUY = 'buy'
+    SELL = 'sell'

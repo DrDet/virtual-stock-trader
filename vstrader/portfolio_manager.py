@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 
-from data import *
-import moex_client
+from vstrader.data import *
+from vstrader import moex_client
 
 
 async def load_portfolio(user_id: int):
