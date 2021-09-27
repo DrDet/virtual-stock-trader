@@ -1,7 +1,7 @@
 import httpx
 import xml.etree.ElementTree as ET
 
-from data import StockInfo
+from vstrader.data import StockInfo
 
 
 async def load_stock_info(ticker: str):

@@ -1,20 +1,16 @@
-from fastapi import FastAPI, HTTPException
-from enum import Enum
+from fastapi import HTTPException
 
-from data import *
-import portfolio_manager
-import moex_client
+from vstrader import portfolio_manager
+from vstrader import moex_client
+from vstrader.data import *
 
-app = FastAPI()
 fake_user_id = 42
 
 
-@app.get("/portfolio")
 async def get_portfolio():
     return await portfolio_manager.load_portfolio(fake_user_id)
 
 
-@app.get("/stocks")
 async def get_stock_info(ticker: str):
     stock_info = await moex_client.load_stock_info(ticker)
     if stock_info is None:
@@ -22,12 +18,6 @@ async def get_stock_info(ticker: str):
     return stock_info
 
 
-class OperationType(str, Enum):
-    BUY = 'buy'
-    SELL = 'sell'
-
-
-@app.post("/trading/{operation_type}")
 async def perform_trading(operation_type: OperationType, trade_offer: TradeOffer):
     stock_info = await moex_client.load_stock_info(trade_offer.ticker)
     if stock_info is None:
