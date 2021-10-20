@@ -28,8 +28,9 @@ class StockPosition(BaseModel):
         return self.average_price * self.count
 
     def update_buy(self, trade_offer: TradeOffer):
+        old_total_price = self.total_price
         self.count += trade_offer.count
-        self.average_price = (self.total_price + trade_offer.total_price) / self.count
+        self.average_price = (old_total_price + trade_offer.total_price) / self.count
 
     def update_sell(self, trade_offer: TradeOffer):
         self.count -= trade_offer.count
