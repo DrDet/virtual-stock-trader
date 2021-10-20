@@ -22,8 +22,9 @@ def stock_positions(stock_info):
 @patch.object(portfolio_manager, 'load_portfolio')
 async def test_buy_basic(mocked_load_portfolio, stock_info, stock_positions):
     mocked_load_portfolio.return_value = Portfolio(balance_rub=100, positions={})
-
-    portfolio = await portfolio_manager.trading_buy(fake_user_id, TradeOffer(ticker='TEST', price=10, count=10),
+    with patch.object(portfolio_manager, '_update_balance') as mocked_upd_balance:
+        with patch.object(portfolio_manager, '_update_stock_position') as mocked_upd_sp:
+            portfolio = await portfolio_manager.trading_buy(fake_user_id, TradeOffer(ticker='TEST', price=10, count=10),
                                                     stock_info)
     assert portfolio.balance_rub == 0
     assert portfolio.positions == stock_positions
@@ -56,7 +57,9 @@ async def test_sell_basic(mocked_load_portfolio, stock_info, stock_positions):
     mocked_load_portfolio.return_value = Portfolio(balance_rub=0, positions=stock_positions)
 
     offer = TradeOffer(ticker='TEST', price=10, count=10)
-    portfolio = await portfolio_manager.trading_sell(fake_user_id, offer, stock_info)
+    with patch.object(portfolio_manager, '_update_balance') as mocked_upd_balance:
+        with patch.object(portfolio_manager, '_update_stock_position') as mocked_upd_sp:
+            portfolio = await portfolio_manager.trading_sell(fake_user_id, offer, stock_info)
     assert portfolio.balance_rub == offer.total_price
     assert portfolio.positions == {'TEST': StockPosition(stock_info=stock_info, average_price=10, count=0)}
 
