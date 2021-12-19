@@ -7,7 +7,6 @@ portfolios = None
 
 
 def prepare_database(db_connect_url):
-    print('prepare_database')
     global database, stock_positions, portfolios
 
     database = databases.Database(db_connect_url)

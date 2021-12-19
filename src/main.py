@@ -1,22 +1,21 @@
 from fastapi import FastAPI
 
+import vstrader.database as db
 from vstrader.endpoints import *
 from vstrader.gql.endpoints import graphql_app
-from vstrader.database import *
 
 app = FastAPI()
-
-prepare_database("mysql+pymysql://vstrader_client@localhost:3306/vstrader")
 
 
 @app.on_event("startup")
 async def startup():
-    await database.connect()
+    db.prepare_database("mysql+pymysql://vstrader_client@localhost:3306/vstrader")
+    await db.database.connect()
 
 
 @app.on_event("shutdown")
 async def shutdown():
-    await database.disconnect()
+    await db.database.disconnect()
 
 
 app.add_route("/graphql", graphql_app)
@@ -30,8 +29,7 @@ async def act_deposit(user_id: int, units_cnt: float):
 
 @app.get("/portfolio")
 async def act_get_portfolio(user_id: int):
-    res = await database.fetch_all(portfolios.select())
-    print(res[0].balance)
+    res = await db.database.fetch_all(db.portfolios.select())
     return await get_portfolio(user_id)
 
 
