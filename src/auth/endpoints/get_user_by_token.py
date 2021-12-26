@@ -2,10 +2,9 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 
+import auth.database as db
 from auth.endpoints._crypto_context import SECRET_KEY, ALGORITHM
-from auth.data import TokenData
-from auth.database import *
-
+from auth.token_data import TokenData
 
 async def get_user(token: str):
     credentials_exception = HTTPException(
@@ -21,7 +20,7 @@ async def get_user(token: str):
         token_data = TokenData(username=username)
     except JWTError:
         raise credentials_exception
-    user = get_user_from_db(fake_users_db, username=token_data.username)
+    user = await db.get_user(token_data.username)
     if user is None:
         raise credentials_exception
     return user
@@ -29,3 +28,4 @@ async def get_user(token: str):
 
 async def get_user_by_token(token: str):
     return await get_user(token)
+    return await db.get_user(token)

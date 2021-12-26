@@ -5,14 +5,14 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 
+import auth.database as db
 from auth.endpoints._crypto_context import *
-from auth.data import *
-from auth.database import *
+from auth.token_data import *
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-def authenticate_user(fake_db, username: str, password: str):
-    user = get_user_from_db(fake_db, username)
+async def authenticate_user(username: str, password: str):
+    user = await db.get_user(username)
     if not user:
         return False
     if not verify_password(password, user.hashed_password):
@@ -32,7 +32,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
 
 
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm):
-    user = authenticate_user(fake_users_db, form_data.username, form_data.password)
+    user = await authenticate_user(form_data.username, form_data.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
