@@ -8,8 +8,8 @@ from vstrader.gql import data as gql
 @strawberry.type
 class Query:
     @strawberry.field
-    async def portfolio(self, user_id: int) -> gql.Portfolio:
-        portfolio_data = await portfolio_manager.load_portfolio(user_id)
+    async def portfolio(self, username: str) -> gql.Portfolio:
+        portfolio_data = await portfolio_manager.load_portfolio(username)
         return gql.Portfolio(portfolio_data)
 
 
